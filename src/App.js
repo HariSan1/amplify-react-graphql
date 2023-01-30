@@ -17,20 +17,6 @@ import {
   deleteNote as deleteNoteMutation,
 } from "./graphql/mutations";
 
-import { API, Storage } from 'aws-amplify';
-import {
-  Button,
-  Flex,
-  Heading,
-  Image,
-  Text,
-  TextField,
-  View,
-  withAuthenticator,
-} from '@aws-amplify/ui-react';
-
-
-
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
 
