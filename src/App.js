@@ -122,9 +122,6 @@ const App = ({ signOut }) => {
     </View>
   );
 };
-
-export default withAuthenticator(App);
-
 {notes.map((note) => (
   <Flex
     key={note.id || note.name}
@@ -148,3 +145,5 @@ export default withAuthenticator(App);
     </Button>
   </Flex>
 ))}
+export default withAuthenticator(App);
+
