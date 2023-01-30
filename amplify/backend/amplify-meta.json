@@ -40,7 +40,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-authcra-staging-215237-deployment/amplify-cfn-templates/auth/authcra6c32110c-cloudformation-template.json",
         "logicalId": "authauthcra6c32110c"
       },
-      "lastPushTimeStamp": "2023-01-30T02:56:53.065Z",
+      "lastPushTimeStamp": "2023-01-30T04:41:49.939Z",
       "output": {
         "CreatedSNSRole": "arn:aws:iam::482672074465:role/sns6c32110c215237-staging",
         "UserPoolId": "us-east-1_ydULJLBBX",
@@ -52,6 +52,50 @@
         "UserPoolName": "authcra6c32110c_userpool_6c32110c"
       },
       "lastPushDirHash": "Ed+5+JbTG5HvV7DqBDGK4nT6Jyc="
+    }
+  },
+  "api": {
+    "authcra": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            }
+          },
+          "additionalAuthenticationProviders": []
+        },
+        "GraphQLAPIIdOutput": "xvbbcp2h5bgajaycfaybqxjyyu",
+        "GraphQLAPIEndpointOutput": "https://cihsevdmzzddvfgg7j7stj6fee.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-vxaxqxyvqnferezaarjmz37fse"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-authcra-staging-215237-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiauthcra"
+      },
+      "lastPushTimeStamp": "2023-01-30T04:41:51.337Z",
+      "lastPushDirHash": "eB3Ttmisd8ZNLUIf11SnPLeoAZs="
+    }
+  },
+  "storage": {
+    "imagestorage": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "lastPushTimeStamp": "2023-01-30T04:41:51.337Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-authcra-staging-215237-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storageimagestorage"
+      },
+      "output": {
+        "BucketName": "authcra481ecf084cd243acb55a69f1a222be7f215237-staging",
+        "Region": "us-east-1"
+      },
+      "lastPushDirHash": "qqB0HioiXIrWOVPBlE39SsozKGs="
     }
   }
 }

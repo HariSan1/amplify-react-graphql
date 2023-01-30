@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "authcra6c32110c": {}
+      },
+      "api": {
+        "authcra": {}
+      },
+      "storage": {
+        "imagestorage": {}
       }
     }
   }
