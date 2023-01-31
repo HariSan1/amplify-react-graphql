@@ -12,48 +12,7 @@
       "AmplifyAppId": "d2nzh09drurc9s"
     }
   },
-  "auth": {
-    "authcra6c32110c": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false,
-      "frontendAuthConfig": {
-        "socialProviders": [],
-        "usernameAttributes": [],
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": []
-        },
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-authcra-staging-215237-deployment/amplify-cfn-templates/auth/authcra6c32110c-cloudformation-template.json",
-        "logicalId": "authauthcra6c32110c"
-      },
-      "lastPushTimeStamp": "2023-01-30T04:41:49.939Z",
-      "output": {
-        "CreatedSNSRole": "arn:aws:iam::482672074465:role/sns6c32110c215237-staging",
-        "UserPoolId": "us-east-1_ydULJLBBX",
-        "AppClientIDWeb": "4j1pdb1j7j3esj593qcumpjr2b",
-        "AppClientID": "nsm3s06psujakgb4ksk63dmb2",
-        "IdentityPoolId": "us-east-1:95fdfc3b-5f81-4626-b68a-71a051d6ee27",
-        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:482672074465:userpool/us-east-1_ydULJLBBX",
-        "IdentityPoolName": "authcra6c32110c_identitypool_6c32110c__staging",
-        "UserPoolName": "authcra6c32110c_userpool_6c32110c"
-      },
-      "lastPushDirHash": "Ed+5+JbTG5HvV7DqBDGK4nT6Jyc="
-    }
-  },
+  "auth": {},
   "api": {
     "authcra": {
       "service": "AppSync",
@@ -77,7 +36,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-authcra-staging-215237-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiauthcra"
       },
-      "lastPushTimeStamp": "2023-01-30T04:41:51.337Z",
+      "lastPushTimeStamp": "2023-01-30T05:20:48.426Z",
       "lastPushDirHash": "eB3Ttmisd8ZNLUIf11SnPLeoAZs="
     }
   },
@@ -86,7 +45,7 @@
       "service": "S3",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
-      "lastPushTimeStamp": "2023-01-30T04:41:51.337Z",
+      "lastPushTimeStamp": "2023-01-30T05:20:48.429Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-authcra-staging-215237-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
         "logicalId": "storageimagestorage"
