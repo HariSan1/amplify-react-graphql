@@ -1,7 +1,7 @@
 {
-  "staging": {
+  "main": {
     "configLevel": "project",
     "useProfile": false,
-    "awsConfigFilePath": "/Users/harisantanam/.amplify/awscloudformation/jgZj1nzol4"
+    "awsConfigFilePath": "/Users/harisantanam/.amplify/awscloudformation/IAihS92ojq"
   }
 }
