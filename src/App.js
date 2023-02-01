@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API, Auth, graphqlOperation } from "aws-amplify";
-import { withAuthenticator } from "aws-amplify-react";
+import { withAuthenticator } from "aws-amplify/ui-react";
 import { createNote, updateNote, deleteNote } from "./graphql/mutations";
 import { listNotes } from "./graphql/queries";
 import {
