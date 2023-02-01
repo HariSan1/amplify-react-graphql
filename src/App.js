@@ -1,234 +1,99 @@
-import React, { useState, useEffect } from "react";
-import { API, Auth, graphqlOperation } from "aws-amplify";
-import { withAuthenticator } from "aws-amplify/ui-react";
-import { createNote, updateNote, deleteNote } from "./graphql/mutations";
-import { listNotes } from "./graphql/queries";
-import {
-  onCreateNote,
-  onDeleteNote,
-  onUpdateNote,
-} from "./graphql/subscriptions";
-import Loading from "./components/loading/loader";
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import { API, Storage } from 'aws-amplify';
+import { withAuthenticator, AmplifySignOut} from '@aws-amplify/ui-react';
+import { listNotes } from './graphql/queries';
+import { createNote as createNoteMutation, deleteNote as deleteNoteMutation } from './graphql/mutations';
+
+
+const initialFormState = { name: '', description: '' }
 
 function App() {
   const [notes, setNotes] = useState([]);
-  const [note, setNote] = useState("");
-  const [noteId, setNoteId] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-
-  const fetchAllNotes = async () => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      const result = await API.graphql(graphqlOperation(listNotes));
-      const allNotes = result.data.listNotes.items;
-      setNotes(allNotes);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsError(true);
-    }
-  };
-
-  const handleChange = event => setNote(event.target.value);
-
-  const hasExistingNote = () => {
-    if (noteId) {
-      const isNote = notes.findIndex(item => item.id === noteId) > -1;
-      return isNote;
-    }
-    return false;
-  };
-
-  const handleCreateNote = async input => {
-    setIsLoading(true);
-    await API.graphql(graphqlOperation(createNote, { input }));
-  };
-
-  const handleUpdateNote = async input => {
-    setIsLoading(true);
-    await API.graphql(graphqlOperation(updateNote, { input }));
-  };
-
-  const handleDelete = async id => {
-    setIsLoading(true);
-    try {
-      await API.graphql(graphqlOperation(deleteNote, { input: { id } }));
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-      setIsError(true);
-    }
-  };
-
-  const handleSetNote = ({ note: text, id: identifier }) => {
-    setNote(text);
-    setNoteId(identifier);
-  };
-
-  const handleSubmit = async event => {
-    event.preventDefault();
-
-    const input = {
-      note,
-      id: noteId,
-    };
-    if (note.length <= 2) return;
-    try {
-      if (hasExistingNote()) {
-        await handleUpdateNote(input);
-      } else {
-        await handleCreateNote(input);
-      }
-      setNote("");
-      setNoteId("");
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error);
-      setIsError(true);
-    }
-  };
-
-  const clearInput = () => {
-    setNote("");
-    setNoteId("");
-  };
-
-  const createNoteListener = async () => {
-    await API.graphql(
-      graphqlOperation(onCreateNote, {
-        owner: (await Auth.currentUserInfo()).username,
-      })
-    ).subscribe({
-      next: noteData => {
-        const newNote = noteData.value.data.onCreateNote;
-        setNotes(prevNotes => {
-          const oldNotes = prevNotes.filter(item => item.id !== newNote.id);
-          const updatedNotes = [newNote, ...oldNotes];
-          return updatedNotes;
-        });
-        setIsLoading(false);
-      },
-    });
-  };
-
-  const deleteNoteListener = async () => {
-    await API.graphql(
-      graphqlOperation(onDeleteNote, {
-        owner: (await Auth.currentUserInfo()).username,
-      })
-    ).subscribe({
-      next: noteData => {
-        const deletedNote = noteData.value.data.onDeleteNote;
-        setNotes(prevNotes => {
-          const updatedNotes = prevNotes.filter(
-            item => item.id !== deletedNote.id
-          );
-          return updatedNotes;
-        });
-        setIsLoading(false);
-      },
-    });
-  };
-
-  const updateNoteListener = async () => {
-    API.graphql(
-      graphqlOperation(onUpdateNote, {
-        owner: (await Auth.currentUserInfo()).username,
-      })
-    ).subscribe({
-      next: noteData => {
-        const updatedNote = noteData.value.data.onUpdateNote;
-
-        setNotes(prevNotes => {
-          const index = prevNotes.findIndex(item => item.id === updatedNote.id);
-
-          const updatedNotes = [
-            ...prevNotes.slice(0, index),
-            updatedNote,
-            ...prevNotes.slice(index + 1),
-          ];
-          return updatedNotes;
-        });
-        setIsLoading(false);
-      },
-    });
-  };
+  const [formData, setFormData] = useState(initialFormState);
 
   useEffect(() => {
-    fetchAllNotes();
-    createNoteListener();
-    deleteNoteListener();
-    updateNoteListener();
-
-    return () => {
-      createNoteListener.unsubscribe();
-      deleteNoteListener.unsubscribe();
-      updateNoteListener.unsubscribe();
-    };
-    // eslint-disable-next-line
+    fetchNotes();
   }, []);
 
+  async function fetchNotes() {
+    const apiData = await API.graphql({ query: listNotes});
+    const notesFromAPI = apiData.data.listNotes.items;
+    await Promise.all(notesFromAPI.map(async note => {
+      if (note.image) {
+        const image = await Storage.get(note.image);
+        note.image = image;
+      }
+      return note;
+    }))
+    setNotes(apiData.data.listNotes.items);
+  }
+
+  async function createNote() {
+    if (!formData.name || !formData.description) return;
+    await API.graphql({ query: createNoteMutation, variables: { input: formData} });
+    if (formData.image) {
+      const image = await Storage.get(formData.image);
+      formData.image = image;
+    }
+    setNotes([ ...notes, formData]);
+    setFormData(initialFormState);
+  }
+
+  async function deleteNote({ id }) {
+    const newNotesArray = notes.filter(note => note.id !== id);
+    setNotes(newNotesArray);
+    await API.graphql({ query: deleteNoteMutation, variables: { input: { id } }});
+  }
+
+  async function onChange(e) {
+    if (!e.target.files[0]) return 
+    const file = e.target.files[0];
+    setFormData({ ...formData, image: file.name});
+    await Storage.put(file.name, file);
+    fetchNotes();
+  }
+
   return (
-    <div className="flex flex-column items-center justify-center pa3 .bg-light-yellow">
-      <h1 className="code f2-l">AWS Amplify Notes</h1>
-      <form onSubmit={handleSubmit} className="mb3 flex">
-        <div className="ba flex items-center justify-between bg-white">
-          <input
-            type="text"
-            name="note"
-            id="note-input"
-            className="pa2 f4 bn outline-0"
-            placeholder="Write your note"
-            autoComplete="off"
-            onChange={handleChange}
-            value={note}
-            // required
-          />
-
-          <button
-            type="button"
-            className={`${note ? "o-100 " : "o-0"} mr1 ml1`}
-            onClick={clearInput}
-          >
-            🅧
-          </button>
-        </div>
-
-        <button type="submit" className="pa2 f5 submit bg-light-green">
-          {hasExistingNote() ? "Update Note" : "Add Note"}
-        </button>
-      </form>
-      {isError && <div>Something went wrong ...</div>}
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <div className="bg-yellow pa3 mw6 w5 w-30-l">
-          {notes.map(item => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between bb "
-            >
-              <li
-                className="list pa1 f3-l f4"
-                onClick={() => handleSetNote(item)}
-              >
-                {item.note}
-              </li>
-              <button
-                className="bg-transparent bn f4 "
-                type="button"
-                onClick={() => handleDelete(item.id)}
-              >
-                <span>&times;</span>
-              </button>
+    <div className="App">
+      <h1>My Notes App</h1>
+      <input
+        onChange={e => setFormData({ ...formData, 'name': e.target.value})}
+        placeholder="Note name"
+        value={formData.name}
+      />
+      <input
+        onChange={e => setFormData({ ...formData, 'description': e.target.value})}
+        placeholder="Note description"
+        value={formData.description}
+      />
+      <input
+        type = "file"
+        onChange={onChange}
+      />
+      <button onClick={createNote}>Create Note</button>
+      <div style={{marginBottom: 30}}>
+        {
+          notes.map(note => (
+            <div key = {note.id || note.name} >
+              <h2> {note.name}</h2>
+              <p> {note.description}</p>
+              <button onClick = {() => deleteNote(note)}>Delete Note</button>
+              {
+                note.image && <img src={note.image} style={{width: 400}} />
+              }
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        }
+      </div>
+      <AmplifySignOut/>
     </div>
   );
 }
 
-export default withAuthenticator(App, { includeGreetings: true });
+export default withAuthenticator(App);
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
